@@ -10,6 +10,7 @@ module Riot2JSON
       @region = region
       LolClient.instance = self
 
+      Process.daemon()
       token = Auth.request_token(region, user, pass)
       @redis = Redis.new(:path => '/tmp/redis.sock')
 
@@ -46,6 +47,7 @@ module Riot2JSON
         puts "Restarting node now..."
         f = open(log, "w")
         f.write(e.backtrace)
+        puts e.inspect
         f.close
 
         start(user, pass, region, port)
@@ -56,7 +58,7 @@ module Riot2JSON
       cache = cacheExists(@region, "name", name)
 
       if !cache.nil?
-        isn.body cache
+        ins.body cache
         return
       end
 
@@ -64,7 +66,11 @@ module Riot2JSON
       req.send
 
       req.callback do |res|
-        json = create_json_success(res.message.values[1].body)
+        if !res.message.values[1].body.nil?
+          json = create_json_success(res.message.values[1].body)
+        else
+          json = create_json_error("Summoner does not exist")
+        end
         expire_object(@region, "name", name, json, 1800)
         ins.body json
       end
@@ -233,7 +239,7 @@ module Riot2JSON
     end
 
     def create_json_success(value)
-      JSON.pretty_generate([:erorr => "success", :data => [value]])
+      JSON.pretty_generate([:erorr => "success", :data => value])
     end
 
     def create_json_error(value)
