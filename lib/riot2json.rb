@@ -1,3 +1,4 @@
+require "rubygems"
 require "net/http"
 require "json"
 require "eventmachine"
@@ -10,11 +11,11 @@ require "thin"
 require "base64"
 
 #Gem sources.
-require "riot2json/auth"
-require "riot2json/client"
-require "riot2json/config"
-require "riot2json/connectionrequest"
-require "riot2json/http"
+require_relative "riot2json/auth"
+require_relative "riot2json/client"
+require_relative "riot2json/config"
+require_relative "riot2json/connectionrequest"
+require_relative "riot2json/http"
 
 
 module Riot2JSON

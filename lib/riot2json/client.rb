@@ -8,6 +8,7 @@ module Riot2JSON
       @heartbeat_sent = 0
       @ready = false
       @region = region
+      @port = port
       LolClient.instance = self
 
       Process.daemon()
@@ -47,11 +48,15 @@ module Riot2JSON
         puts "Restarting node now..."
         f = open(log, "w")
         f.write(e.backtrace)
-        puts e.inspect
+        f.write("\n#{e.inspect}")
         f.close
 
         start(user, pass, region, port)
       end
+    end
+
+    def getStatus(ins)
+      ins.body create_json_success([:region => @region, :port => @port, :online => "true"])
     end
 
     def getSummonerByName(name, ins)

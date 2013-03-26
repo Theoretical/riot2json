@@ -7,37 +7,40 @@ module Riot2JSON
       content_type "application/json"
     end
 
-    aget '/lol/name/:name' do |name|
+    aget '/lol/:region/name/:name' do |region, name|
       LolClient.instance.getSummonerByName(name, self)
     end
 
-    aget '/lol/ingame/:name' do |name|
+    aget '/lol/:region/ingame/:name' do |region, name|
       LolClient.instance.getGameInProgress(name, self)
     end
 
-    aget '/lol/recentgames/:account' do |acct|
+    aget '/lol/:region/recentgames/:account' do |region, acct|
       LolClient.instance.getRecentGames(acct, self)
     end
 
-    aget '/lol/stats/:account/?:season?' do |acct, season|
+    aget '/lol/:region/stats/:account/?:season?' do |regioan, cct, season|
       LolClient.instance.getPlayerStats(acct, self, season)
     end
 
-    aget '/lol/leagues/:summoner' do |summoner|
+    aget '/lol/:region/leagues/:summoner' do |region, summoner|
       LolClient.instance.getLeaguesForPlayer(summoner, self)
     end
 
-    aget '/lol/practicegames' do
+    aget '/lol/:region/practicegames' do
       LolClient.instance.listAllPracticeGames(self)
     end
 
-    aget '/lol/queue/available' do
+    aget '/lol/:region/queue/available' do
       LolClient.instance.getAvailableQueues(self)
     end
 
-    aget '/lol/queue/info/:id' do |id|
+    aget '/lol/:region/queue/info/:id' do |region, id|
       LolClient.instance.getQueueInfo(id, self)
     end
 
+    aget '/lol/:region/status' do
+      LolClient.instance.getStatus(self)
+    end
   end
 end
