@@ -42,5 +42,6 @@ module Riot2JSON
     aget '/lol/:region/status' do
       LolClient.instance.getStatus(self)
     end
+
   end
 end

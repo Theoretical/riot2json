@@ -43,7 +43,7 @@ module Riot2JSON
           Thin::Server.start HttpListener, '0.0.0.0', port
         end
       rescue => e
-        log = "crash-#{Time.now.to_i}.log"
+        log = "/var/log/riot2json/crash-#{Time.now.to_i}.log"
         puts "An unexpected error has been reached, dumping formation to log: #{log}"
         puts "Restarting node now..."
         f = open(log, "w")
@@ -177,14 +177,14 @@ module Riot2JSON
       req.send
 
       req.callback do |res|
-        json = crate_json_success(res.message.values[1].body)
-        expire_at(@region, "leagues", summoner, json, 1800)
+        json = create_json_success(res.message.values[1].body)
+        expire_object(@region, "leagues", summoner, json, 1800)
         ins.body json
       end
 
       req.errback do |res|
         json = create_json_error(res.message.values[1].rootCause[:message])
-        expire_at(@region, "leagues", summoner, json, 1800)
+        expire_object(@region, "leagues", summoner, json, 1800)
         ins.body json
       end
     end

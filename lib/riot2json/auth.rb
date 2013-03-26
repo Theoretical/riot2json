@@ -45,7 +45,7 @@ module Riot2JSON
       end
 
       while id - cur > rate
-        puts "Currently in positon: #{current}"
+        puts "Currently in positon: #{cur}"
         sleep(delay)
 
         resp = send_request(Config::QUEUE_SERVER % (region), "/login-queue/rest/queue/ticker/#{champ}", "", true)
