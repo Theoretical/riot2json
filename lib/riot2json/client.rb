@@ -56,7 +56,7 @@ module Riot2JSON
       cache = cacheExists(@region, "name", name)
 
       if !cache.nil?
-        ins.body JSON.pretty_generate(JSON.load(cache))
+        isn.body cache
         return
       end
 
@@ -64,8 +64,9 @@ module Riot2JSON
       req.send
 
       req.callback do |res|
-        expire_object(@region, "name", name, JSON.generate(res.message.values[1].body), 1800)
-        ins.body JSON.pretty_generate(res.message.values[1].body)
+        json = create_json_success(res.message.values[1].body)
+        expire_object(@region, "name", name, json, 1800)
+        ins.body json
       end
     end
 
@@ -73,7 +74,7 @@ module Riot2JSON
       cache = cacheExists(@region, "ingame", name)
 
       if !cache.nil?
-        ins.body JSON.pretty_generate(JSON.load(cache))
+        ins.body cache
         return
       end
 
@@ -81,21 +82,23 @@ module Riot2JSON
       req.send
 
       req.callback do |res|
-        expire_object(@region, "ingame", name,  JSON.generate(res.message.values[1].body), 1800)
-        ins.body JSON.pretty_generate(res.message.values[1].body)
+        json = create_json_success(res.message.values[1].body)
+        expire_object(@region, "ingame", name, json, 1800)
+        ins.body json
       end
 
       req.errback do |res|
         #not in cache, save this message for 1m30s
-        expire_object(@region, "ingame", name, JSON.generate(res.message.values[1]), 180)
-        ins.body JSON.pretty_generate([:error => "Summoner: #{name} is not in-game.", :reason => res.message.values[1].rootCause[:message]])
+        json = create_json_error(res.message.values[1].rootCause[:message])
+        expire_object(@region, "ingame", name, json, 180)
+        ins.body json
       end
     end
 
     def getRecentGames(account,ins)
       cache = cacheExists(@region, "recent", account)
       if !cache.nil?
-        ins.body JSON.pretty_generate(JSON.load(cache))
+        ins.body cache
         return
       end
 
@@ -103,13 +106,15 @@ module Riot2JSON
       req.send
 
       req.callback do |res|
-        expire_object(@region, "recent", account, JSON.generate(res.message.values[1].body), 1800)
-        ins.body JSON.pretty_generate(res.message.values[1].body)
+        json = create_json_success(res.message.values[1].body)
+        expire_object(@region, "recent", account, json, 1800)
+        ins.body json
       end
 
       req.errback do |res|
-        expire_object(@region, "recent", JSON.generate([:error => "Error looking up account."]), 30)
-        ins.body JSON.pretty_generate([:error => "Error looking up account."])
+        json = create_json_error(res.message.values[1].rootCause[:message])
+        expire_object(@region, "recent", json, 30)
+        isn.body json
       end
 
     end
@@ -120,7 +125,7 @@ module Riot2JSON
         cache = cacheExists(@region, "playerstats", account)
 
         if !cache.nil?
-          ins.body JSON.pretty_generate(JSON.load(cache))
+          ins.body cache
           return
         end
         req = invoke("retrievePlayerStatsByAccountId", "playerStatsService", [account])
@@ -129,7 +134,7 @@ module Riot2JSON
         cache = cacheExists(@regiom, "playerstats-#{season}", account)
 
         if !cache.nil?
-          ins.body JSON.pretty_generate(JSON.load(cache))
+          ins.body cache
           return
         end
         req = invoke("retrievePlayerStatsByAccountId", "playerStatsService", [account, season.upcase])
@@ -137,13 +142,15 @@ module Riot2JSON
       end
 
       req.callback do |res|
-        expire_object(@region, cache.nil? ? "playerstats" : "playerstats-#{season}", account, JSON.generate(res.message.values[1].body), 1800)
-        ins.body JSON.pretty_generate(res.message.values[1].body)
+        json = create_json_success(res.message.values[1].body)
+        expire_object(@region, cache.nil? ? "playerstats" : "playerstats-#{season}", account, json, 1800)
+        ins.body json
       end
 
       req.errback do |res|
-        expire_object(@region, cache.nil? ? "playerstats" : "playerstats-#{season}", account, JSON.generate([:error => "Error looking up account statistics."]), 30)
-        ins.body JSON.pretty_generate([:error => "Error looking up account.", :reason => res.message.values[1].rootCause[:message]])
+        json = create_json_error(res.message.values[1].rootCause[:message])
+        expire_object(@region, cache.nil? ? "playerstats" : "playerstats-#{season}", account, json, 30)
+        ins.body json
       end
     end
 
@@ -151,7 +158,7 @@ module Riot2JSON
       cache = cacheExists(@region, "leagues", summoner)
 
       if !cache.nil?
-        ins.body JSON.pretty_generate(JSON.load(cache))
+        ins.body cache
         return
       end
 
@@ -159,13 +166,15 @@ module Riot2JSON
       req.send
 
       req.callback do |res|
-        value = JSON.generate(res.message.values[1].body)
-        expire_at(@region, "leagues", summoner, value, 1800)
-        ins.body JSON.pretty_generate(res.message.values[1].body)
+        json = crate_json_success(res.message.values[1].body)
+        expire_at(@region, "leagues", summoner, json, 1800)
+        ins.body json
       end
 
       req.errback do |res|
-        ins.body JSON.pretty_generate(res.message.values[1])
+        json = create_json_error(res.message.values[1].rootCause[:message])
+        expire_at(@region, "leagues", summoner, json, 1800)
+        ins.body json
       end
     end
 
@@ -221,6 +230,14 @@ module Riot2JSON
       entry = "#{region}-#{name}-#{key}"
       @redis.set(entry, value)
       @redis.expireat(entry, Time.now.to_i + time)
+    end
+
+    def create_json_success(value)
+      JSON.pretty_generate([:erorr => "success", :data => [value]])
+    end
+
+    def create_json_error(value)
+      JSON.pretty_generate([:error => "error", :reason => value])
     end
 
     def create_remote_message(operation, dest, body, dsid)
@@ -295,9 +312,6 @@ module Riot2JSON
         @account = res.message.values[1].body[:accountSummary][:accountId]
         @token = res.message.values[1].body[:accountSummary][:token]
         auth("%s:%s" % [res.message.values[1].body[:accountSummary][:username], res.message.values[1].body[:token]])
-      end
-      req.errback do |wat|
-        puts wat.message.values[1].inspect
       end
     end
   end
