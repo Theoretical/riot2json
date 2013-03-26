@@ -18,5 +18,9 @@ require "riot2json/http"
 
 
 module Riot2JSON
-  LolClient.new.start 'na1'
+  user = ARGV[0]
+  pass = ARGV[1]
+  region = ARGV[2]
+  port = ARGV[3]
+  LolClient.new.start user, pass, region, port
 end

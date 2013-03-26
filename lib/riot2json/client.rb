@@ -4,14 +4,12 @@ module Riot2JSON
       attr_accessor :instance
     end
 
-    def start(region)
+    def start(user, pass, region, port)
       @heartbeat_sent = 0
       @ready = false
       @region = region
       LolClient.instance = self
 
-      user = Config::USER
-      pass = Config::PASS
       token = Auth.request_token(region, user, pass)
       @redis = Redis.new(:path => '/tmp/redis.sock')
 
@@ -40,13 +38,17 @@ module Riot2JSON
             end
           end
 
-          Thin::Server.start HttpListener, '0.0.0.0', 3000
+          Thin::Server.start HttpListener, '0.0.0.0', port
         end
       rescue => e
-        puts "crash reached, reconnecting!"
-        puts e.inspect
-        puts e.backtrace
-        start(region)
+        log = "crash-#{Time.now.to_i}.log"
+        puts "An unexpected error has been reached, dumping formation to log: #{log}"
+        puts "Restarting node now..."
+        f = open(log, "w")
+        f.write(e.backtrace)
+        f.close
+
+        start(user, pass, region, port)
       end
     end
 
