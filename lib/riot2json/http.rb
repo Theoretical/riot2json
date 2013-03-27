@@ -19,7 +19,7 @@ module Riot2JSON
       LolClient.instance.getRecentGames(acct, self)
     end
 
-    aget '/lol/:region/stats/:account/?:season?' do |regioan, cct, season|
+    aget '/lol/:region/stats/:account/?:season?' do |region, acct, season|
       LolClient.instance.getPlayerStats(acct, self, season)
     end
 
