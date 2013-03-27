@@ -244,7 +244,7 @@ module Riot2JSON
     end
 
     def create_json_success(value)
-      JSON.pretty_generate([:erorr => "success", :data => value])
+      JSON.pretty_generate([:error => "success", :data => value])
     end
 
     def create_json_error(value)
