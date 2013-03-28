@@ -25,6 +25,13 @@ module Riot2JSON
       resp = send_request(Config::QUEUE_SERVER % (region), Config::QUEUE_PATH, post_data)
 
       token = resp["token"]
+
+      if resp["reason"] == "OpeningSite"
+        puts "Server is currently busy, please hold!"
+        sleep(resp["delay"] / 1000)
+        request_token(region, user, password)
+        return
+      end
       return resp["reason"].to_sym if resp["reason"] != "login_rate"
       return token if token
 
@@ -46,11 +53,11 @@ module Riot2JSON
       end
 
       while id - cur > rate
-        puts "Currently in positon: #{cur}"
-        sleep(delay)
+        puts "Currently in positon: #{id - cur} |  delay: #{delay}"
+        sleep(delay/1000)
 
         resp = send_request(Config::QUEUE_SERVER % (region), "/login-queue/rest/queue/ticker/#{champ}", "", true)
-        cur = resp["current"]
+        cur = resp[node.to_s].to_i(16)
       end
 
       return resp["token"] if resp["token"]

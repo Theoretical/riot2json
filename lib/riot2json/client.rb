@@ -11,7 +11,7 @@ module Riot2JSON
       @port = port
       LolClient.instance = self
 
-      Process.daemon()
+#      Process.daemon()
       token = Auth.request_token(region, user, pass)
       @redis = Redis.new(:path => '/tmp/redis.sock')
 
@@ -323,6 +323,9 @@ module Riot2JSON
         @account = res.message.values[1].body[:accountSummary][:accountId]
         @token = res.message.values[1].body[:accountSummary][:token]
         auth("%s:%s" % [res.message.values[1].body[:accountSummary][:username], res.message.values[1].body[:token]])
+      end
+      req.errback do |res|
+        puts res.message.values[1].inspect
       end
     end
   end
