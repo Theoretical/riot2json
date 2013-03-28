@@ -19,6 +19,7 @@ require_relative "riot2json/http"
 
 
 module Riot2JSON
+  OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
   user = ARGV[0]
   pass = ARGV[1]
   region = ARGV[2]

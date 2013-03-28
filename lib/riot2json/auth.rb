@@ -8,6 +8,7 @@ module Riot2JSON
         'User-Agent' => 'Mozilla/5.0 (Windows; U; en-US) AppleWebKit/533.19.4 (KHTML, like Gecko) AdobeAIR/3.1',
       }
 
+
       http = Net::HTTP.start(url, 443, :use_ssl => true)
       if !get
         req = Net::HTTP::Post.new(path, headers)
