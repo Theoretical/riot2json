@@ -11,7 +11,7 @@ module Riot2JSON
       @port = port
       LolClient.instance = self
 
-#      Process.daemon()
+      Process.daemon()
       token = Auth.request_token(region, user, pass)
       @redis = Redis.new(:path => '/tmp/redis.sock')
 
