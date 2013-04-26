@@ -7,7 +7,7 @@ Gem::Specification.new do |gem|
   gem.version       = "0.0.1"
   gem.authors       = ["Jacob"]
   gem.email         = ["knidalee@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
+  gem.description   = "Riot2JSON is a Ruby implementation of the League Of Legends RTMP service."
   gem.summary       = %q{TODO: Write a gem summary}
   gem.homepage      = ""
 
