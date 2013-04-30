@@ -85,8 +85,8 @@ module Riot2JSON
       cache = cacheExists(@region, "ingame", name)
 
       if !cache.nil?
-        ins.body cache
-        return
+        #ins.body cache
+        #return
       end
 
       req = invoke("retrieveInProgressSpectatorGameInfo", "gameService", name)
@@ -100,7 +100,8 @@ module Riot2JSON
 
       req.errback do |res|
         #not in cache, save this message for 1m30s
-        json = create_json_error(res.message.values[1].rootCause[:message])
+        puts res.message.values.inspect
+        json = create_json_error(res.message.values[1].body)
         expire_object(@region, "ingame", name, json, 180)
         ins.body json
       end
