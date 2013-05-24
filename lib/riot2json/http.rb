@@ -43,5 +43,9 @@ module Riot2JSON
       LolClient.instance.getStatus(self)
     end
 
+    aget '/lol/:region/store' do
+      LolClient.instance.getStore(self)
+    end
+
   end
 end

@@ -59,12 +59,25 @@ module Riot2JSON
       ins.body create_json_success([:region => @region, :port => @port, :online => "true"])
     end
 
+    def getStore(ins)
+      req = invoke('getStoreUrl', 'loginService', [])
+
+      puts 'test?'
+      req.callback do |res|
+        ins.body res.message.values.inspect
+      end
+
+      req.errback do |res|
+        ins.body res.message.values.inspect
+      end
+    end
+
     def getSummonerByName(name, ins)
       cache = cacheExists(@region, "name", name)
 
       if !cache.nil?
-        ins.body cache
-        return
+#        ins.body cache
+#        return
       end
 
       req = invoke("getSummonerByName", "summonerService", [name])
@@ -89,7 +102,7 @@ module Riot2JSON
         #return
       end
 
-      req = invoke("retrieveInProgressSpectatorGameInfo", "gameService", name)
+      req = invoke("retrieveInProgressSpectatorGameInfo", "gameService", [name])
       req.send
 
       req.callback do |res|
