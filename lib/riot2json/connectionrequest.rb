@@ -5,7 +5,7 @@ module Riot2JSON
 
       callback do |res|
         puts "Login Started."
-        @connection.dsid = res.message.values[1][:id]
+        LolClient.instance.setDSId(res.message.values[1][:id])
         @connection.change_state :ready
       end
     end

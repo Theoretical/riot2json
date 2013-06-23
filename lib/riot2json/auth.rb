@@ -32,6 +32,7 @@ module Riot2JSON
         request_token(region, user, password)
         return
       end
+      
       return resp["reason"].to_sym if resp["reason"] != "login_rate"
       return token if token
 

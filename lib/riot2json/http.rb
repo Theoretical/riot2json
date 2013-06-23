@@ -43,8 +43,13 @@ module Riot2JSON
       LolClient.instance.getStatus(self)
     end
 
-    aget '/lol/:region/store' do
-      LolClient.instance.getStore(self)
+    #tracker for lolboost.net
+    aget '/lol/:region/tracker/add/:name/:booster/:startingdiv/:endingdiv' do |region, name, booster, startingdiv, endingdiv|
+      LolClient.instance.addTracker(name, booster, startingdiv, endingdiv, self)
+    end
+
+    aget '/lol/:region/tracker/:name' do |region, name|
+      LolClient.instance.getTracker(name, self)
     end
 
   end
