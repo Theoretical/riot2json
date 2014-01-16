@@ -27,10 +27,6 @@ module Riot2JSON
       LolClient.instance.getLeaguesForPlayer(summoner, self)
     end
 
-    aget '/lol/:region/practicegames' do
-      LolClient.instance.listAllPracticeGames(self)
-    end
-
     aget '/lol/:region/queue/available' do
       LolClient.instance.getAvailableQueues(self)
     end
@@ -43,14 +39,6 @@ module Riot2JSON
       LolClient.instance.getStatus(self)
     end
 
-    #tracker for lolboost.net
-    aget '/lol/:region/tracker/add/:name/:booster/:startingdiv/:endingdiv' do |region, name, booster, startingdiv, endingdiv|
-      LolClient.instance.addTracker(name, booster, startingdiv, endingdiv, self)
-    end
-
-    aget '/lol/:region/tracker/:name' do |region, name|
-      LolClient.instance.getTracker(name, self)
-    end
 
   end
 end

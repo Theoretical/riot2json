@@ -9,7 +9,6 @@ require "sinatra/async"
 require "redis"
 require "thin"
 require "base64"
-require "mysql2"
 
 #Gem sources.
 require_relative "riot2json/auth"
@@ -26,5 +25,6 @@ module Riot2JSON
   region = ARGV[2]
   port = ARGV[3]
   version = ARGV[4]
-  LolClient.new.start user, pass, region, port, version
+  isDaemon = ARGV[5]
+  LolClient.new.start user, pass, region, port, version, isDaemon
 end
