@@ -48,7 +48,7 @@ module Riot2JSON
           Thin::Server.start HttpListener, '0.0.0.0', port
         end
       rescue => e
-        log = "/var/log/penguins/rtmp/crash-#{Time.now.strftime("%m-%d-%Y %H:%M:%S}"
+        log = "/var/log/penguins/rtmp/crash-#{Time.now.strftime("%m-%d-%Y %H:%M:%S")}"
 		if not isDaemon
 			puts "An unexpected error has been reached, dumping formation to log: #{log}"
 			puts "Restarting node now..."
